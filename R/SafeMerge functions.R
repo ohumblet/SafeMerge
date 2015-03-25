@@ -93,3 +93,31 @@ SafeMerge <- function(x, y, by = NULL,
 }
 
 
+return_by_variables <- function(by, by.i) {
+
+  if( !is.null(by) ) {
+    return(by)
+    } else if( !is.null(by.i) ) {
+      return(by.i)
+    } else stop("BOth by and by,i were NULL.")
+
+}
+
+# manual testing- to delete
+return_by_variables("by", "by.x")
+return_by_variables(NULL, "by.x")
+return_by_variables(NULL, NULL)
+
+# experimenting with unique and length
+df.test <- data.frame(v1 = rep(c(1,2,3), c(3,3,3)),
+                      v2 = rep(c(1,2,3), 3)
+                      )
+
+length(unique(df.test$v1))
+
+unique(df.test)
+
+?unique
+?duplicated
+
+?unique
