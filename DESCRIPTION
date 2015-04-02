@@ -1,8 +1,8 @@
 Package: SafeMerge
-Title: What the Package Does (one line, title case)
+Title: SAFER MERGING OF TWO DATA FRAMES.
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph)
+Authors@R: person("Olivier", "Humblet", , "ohumblet@gmail.com", role = c("aut", "cre"))
+Description: A wrapper for the merge function, for interactive use. Prints information and warnings about the merge, then conducts the merge in question (with identical functionality, except that the by variable is set to NULL by default, and no dots parameters can be specified).
 Depends: R (>= 3.1.2)
 License: What license is it under?
 LazyData: true
