@@ -6,3 +6,5 @@ Description: A wrapper for the merge function, for interactive use. Prints infor
 Depends: R (>= 3.1.2)
 License: What license is it under?
 LazyData: true
+Suggests: knitr
+VignetteBuilder: knitr
