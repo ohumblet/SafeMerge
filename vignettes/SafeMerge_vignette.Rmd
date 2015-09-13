@@ -1,0 +1,126 @@
+---
+title: "SafeMerge_vignette"
+author: "Olivier Humblet"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SafeMerge_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+## Rationale
+Merging data frames is dangerous. Done incorrectly, it can lead to data that is drasticallly different thah intended, even though no error messages are generated! But determining whether a merge yielded the intended data frame can be difficult. SafeMerge aims to make this process so easy that it replaces the base merge function and becomes part of your routine interactive programming workflow.
+
+## Basic description
+SafeMerge is a wrapper for the merge function that returns the merged dataset, but additionally prints information about the merge that occurred so that the analyst can assess whether it too place as intended. SafeMerge is designed for interactive use: note that this additional information is not returned. The merging functionality of SafeMerge is almost identical to that of base merge, with a few exceptions --detailed below and in the package Details-- designed to prevent likely errors, even though these do not generate errors from base merge. 
+  
+Below are 5 (?) case studies illustrating potential merge errors, and how they can be detected by using SafeMerge. First we will define two simple data frames, variations of which will be used in the case studies below.
+
+*A note on nomenclature:* We will refer to the first input data frame as x and the second as y (in the spirit of the base merge function).
+
+------------------
+
+### Case study #1: specifying the wrong join type.
+
+An important question is which rows to include in the merged data frame (i.e. the type of join, in SQL jargon). The 4 basic types (as per Wikipedia: **add URL**), along with the merge options used to explicitly request them, are:
+- Inner (all = FALSE): add def from wiki
+- Left outer (all.x = TRUE): add def from wiki
+- Right outer (all.y = TRUE): add def from wiki
+- Full outer (all = TRUE): add def from wiki
+
+When you fail to specify any 'all' variables in base merge, the default is for an inner merge. This may not be the desired behavior, as illustrated in the following example. 
+A brief digression: this, and all following case studies, will use variants of the toy data frames coming from the following scenario:
+
+#### Data scenario
+A researcher wants to understand the association between stress and blood pressure. To accomplish this they recruited a small number of people, and measured their blood pressure (hi/lo) and stored it in one data frame. Then they collected information on participants' stress (yes/no) using a sophisticated survey, and stored this information in a second data frame. Each person is identified with a unique, randomly generated alphanumeric code.
+Their goal now is to combine these data into a single data frame so that the association between these two quantities can be assessed. 
+*An important characteristic of our researcher is that they are so confident that their merges have ocurred perfectly that they never bother to actually check.* (And if this seems implausible given the extreme simplicity of the data examples below, you can mentally replace it with one of the many reasons why real-life researchers may not fully check their merges: 
+* the datasets are too large to check the merge by visual inspection
+* detailed error checking is complex
+* there's never enough time
+* I'm sure my merge worked fine-- I'm a professional.  
+
+We create the two datasets as follows. For the purpose of case study #1, note that blood pressure data has been collected from 3 people, but stress data from only 2.
+
+```{r define-data-1}
+
+df.bp <- data.frame(id = c("1abc", "2efg", "3hij"),
+                    bp = c("hi", "lo", "hi")
+                    )
+df.bp
+
+df.stress <- data.frame(id = c("1abc", "2efg"),
+                        stress = c("no", "yes")
+                        )
+df.stress
+
+```
+
+Returning now to case study #1, our researcher has conducted the merge as follows:
+
+```{r cs1-merge}
+
+merge(df.bp, df.stress, by = "id")
+
+```
+
+Satisfied, they move on to the analysis phase. However their new data frame contains one fewer participant than previously, because their failure to specify any 'all' variables caused base merge to default to an inner join (and remember that the stress dataset did not contain any data for the person with id "3hij".) Perhaps this is what our researcher intended, but perhaps it was a mistake; they may have instead intended for all three participants' data to be included in the final dataset (with a missing stress value for participant #3).
+Additional examples of specifying the wrong join type would might include actively specifying the wrong options, e.g. all.y = TRUE, when the intended value was all.x = TRUE. 
+Safemerge aims to make this process more transparent by printing information about the datasets that go into the merge, and the one that emerges from it.  
+If our researcher had used SafeMerge they would have accomplished the same merge as follows:
+
+```{r cs1-safemerge}
+
+SafeMerge(df.bp, df.stress, by = "id")
+
+```
+
+Our researcher would have reviewed the information and noted several pieces of relevant information:
+1) The requested merge type is made explicit in the first line of the output, so an analyst can note whether this matches their intention.
+2) The number of unique combinations of the by variables is listed for each of the 3 datasets (x, y, and merged). In this case only one by variable (id) was specified, so this value corresponds to the number of study participants whose data is included. In this case an analyst could see that x contains 3 participants, y contains only 2, and similarly the merged data contains only 2.
+
+In this way the additional information provided by SafeMerge would allow an analyst to quicky and easily see whyether the requested merge includes the observations that they expect.
+
+------------------
+
+### Case study #2: forgetting to specify a by variable.
+
+By variables are at the heart of the merging process. When you fail to specify any by variables in base merge, the function will assign the default of: intersect(names(x), names(y)). This can cause unintended behavior if you didn't mean for all the overlapping variables to be used as by variables.
+Furthermore if no variables names intersect, then the merged data frame contains all possible combinations of the data frame observations. The following code illustrates the latter behavior:
+
+```{r cs2-merge}
+
+df.x[c(1,4),]
+df.y[1:2,]
+
+merge(df.x[c(1,4),], df.y[1:2,])
+
+```
+
+In contrast, SafeMerge generates an error if no by variables are specified, preventing this kind of error from happening.
+
+```{r cs2-safemerge, error=TRUE, purl=FALSE}
+
+SafeMerge(df.bp, df.stress)
+
+```
+
+
+
+```{r}
+
+# what are these? what's the goal?
+cat("v1 and id are analogous variables with different names in these two data frames.")
+df.x <- data.frame(id = rep(c(1,2,3), c(3,3,3)),
+                   v2 = rep(c(1,2,3), 3),
+                   v3 = runif(9)
+)
+df.x
+
+df.y <- data.frame(id = c(1,2,3,4),
+                   v4 = runif(4)
+)
+df.y
+
+```

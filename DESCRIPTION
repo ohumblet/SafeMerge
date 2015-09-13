@@ -1,10 +1,14 @@
 Package: SafeMerge
+Type: Package
 Title: SAFER MERGING OF TWO DATA FRAMES.
 Version: 0.0.0.9000
 Authors@R: person("Olivier", "Humblet", , "ohumblet@gmail.com", role = c("aut", "cre"))
-Description: A wrapper for the merge function, for interactive use. Prints information and warnings about the merge, then conducts the merge in question (with identical functionality, except that the by variable is set to NULL by default, and no dots parameters can be specified).
+Description: A wrapper for the merge function, for interactive use. Prints information and warnings about the merge, then conducts the merge in question (with nearly identical functionality, except as described in the SafeMerge function documentation).
 Depends: R (>= 3.1.2)
-License: What license is it under?
-LazyData: true
-Suggests: knitr
+License: GPL-3
+LazyData: TRUE
+Suggests: testthat,
+    knitr
+Imports: dplyr,
+    magrittr
 VignetteBuilder: knitr

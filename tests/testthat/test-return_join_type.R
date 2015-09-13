@@ -1,9 +1,9 @@
 ##### Introduction ####
 #
-#  Unit testing for the function "return_merge_type"
+#  Unit testing for the function "return_join_type"
 #
 #  Inputs:
-#     "return_merge_type", a function in the SafeMerge package
+#     "return_join_type", a function in the SafeMerge package
 #
 #  Output:
 #     1) N/A
@@ -20,28 +20,28 @@ library(testthat)
 
 # Testing
 
-context("Test return_merge_type")
+context("Test return_join_type")
 
 
 test_that("The appropriate merge types are returned.", {
 
-  expect_true( return_merge_type(all = FALSE,
+  expect_true( return_join_type(all = FALSE,
                                  all.x = FALSE,
                                  all.y = FALSE) == "INNER" )
 
-  expect_true( return_merge_type(all = TRUE,
+  expect_true( return_join_type(all = TRUE,
                                  all.x = TRUE,
                                  all.y = TRUE) == "FULL OUTER" )
 
-  expect_true( return_merge_type(all = FALSE,
+  expect_true( return_join_type(all = FALSE,
                                  all.x = TRUE,
                                  all.y = FALSE) == "LEFT OUTER" )
 
-  expect_true( return_merge_type(all = FALSE,
+  expect_true( return_join_type(all = FALSE,
                                  all.x = FALSE,
                                  all.y = TRUE) == "RIGHT OUTER" )
 
-  expect_error( return_merge_type(all = FALSE,
+  expect_error( return_join_type(all = FALSE,
                                    all.x = TRUE,
                                    all.y = TRUE),
                 "A combination of 'all' variables was specified that is unexpected for SafeMerge." )

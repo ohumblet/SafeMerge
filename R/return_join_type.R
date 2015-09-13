@@ -1,4 +1,4 @@
-#' @title Return the merge type.
+#' @title Return the join type.
 #'
 #' @description Take as inputs the three 'all' variables, and determines what merge type was intended, i.e. one of "INNER", "FULL OUTER", "LEFT OUTER", "RIGHT OUTER".
 #'
@@ -11,13 +11,12 @@
 #' @details Introduces a behavior that differs from that of base merge, i.e. that ir returns an error for combinations of 'all' values that are odd but legal. For example return_merge_type(all = "FALSE", all.x = "TRUE", all.y = FALSE) returns an error because it was probably unintentional, even though this seems to produce a functional merge (presumably a FULL OUTER merge)
 #'
 #' @keywords merge
-#' @export
 #' @examples
 #' return_merge_type(all = "FALSE", all.x = "FALSE", all.y = FALSE)
 #'
 #' @author Olivier Humblet
 
-return_merge_type <- function(all, all.x, all.y) {
+return_join_type <- function(all, all.x, all.y) {
 
   if( all %in% FALSE &
       all.x %in% FALSE &
