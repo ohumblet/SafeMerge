@@ -12,5 +12,7 @@ Get the development version from github:
 
 ```R
 # install.packages("devtools")
-devtools::install_github("ohumblet/SafeMerge")
+devtools::install_github("ohumblet/SafeMerge", build_vignettes = TRUE)
+library("SafeMerge")
+vignette("SafeMerge")
 ```
