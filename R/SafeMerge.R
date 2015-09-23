@@ -36,11 +36,11 @@ SafeMerge <- function(x, y, by = NULL,
 
   # Generate list of merged dataframes: merged, merged_from_x, and merged_from_y.
   df_list <-
-    return_list_merged_dataframes(x, y,
-                                  by = NULL, by.x = by, by.y = by,
-                                  all = FALSE, all.x = all, all.y = all,
-                                  sort = TRUE, suffixes = c(".x",".y"),
-                                  incomparables = NULL)
+    return_list_merged_dataframes(x = x, y = y,
+                                  by = by, by.x = by.x, by.y = by.y,
+                                  all = all, all.x = all.x, all.y = all.y,
+                                  sort = sort, suffixes = suffixes,
+                                  incomparables = incomparables)
 
   # Generate errors
   generate_errors(by = by,
@@ -49,7 +49,11 @@ SafeMerge <- function(x, y, by = NULL,
                   list_in = df_list)
 
   # Generate warnings
-#   generate_warnings()
+  generate_warnings(x = x,
+                    y = y,
+                    by.x = by.x,
+                    by.y = by.y,
+                    suffixes = suffixes)
 
   # Print output that we always want to see
   print_always(x = x,
@@ -66,9 +70,7 @@ SafeMerge <- function(x, y, by = NULL,
   }
 
   # remove extraneous variables from the merged data frame
-  dOut <- remove_new_variables(df_list[["merged"]],
-                               df_list[["merged_from_x"]],
-                               df_list[["merged_from_y"]])
+  dOut <- df_list[["merged"]]
 
   # return the merged data frame
   return(dOut)

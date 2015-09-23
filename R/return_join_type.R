@@ -4,15 +4,16 @@
 #'
 #' @param all   Identical to base merge function.
 #' @param all.x Identical to base merge function.
-#' @param all.y specifications of the columns used for merging (See Details), but differs from base function in that default is NULL, to prevent inadvertent merging without a by variable.
+#' @param all.y Identical to base merge function.
 #'
 #' @return Returns a character value equal to one of "INNER", "FULL OUTER", "LEFT OUTER", "RIGHT OUTER". Or an error if an unexpected combination of values is specified.
 #'
-#' @details Introduces a behavior that differs from that of base merge, i.e. that ir returns an error for combinations of 'all' values that are odd but legal. For example return_merge_type(all = "FALSE", all.x = "TRUE", all.y = FALSE) returns an error because it was probably unintentional, even though this seems to produce a functional merge (presumably a FULL OUTER merge)
+#' @details Introduces a behavior that differs from that of base merge, i.e. that ir returns an error for combinations of 'all' values that are odd but legal. For example return_merge_type(all = "FALSE", all.x = "TRUE", all.y = TRUE) returns an error because it was probably unintentional, even though this seems to produce a functional merge (presumably a FULL OUTER merge)
 #'
 #' @keywords merge
+#' @export
 #' @examples
-#' return_merge_type(all = "FALSE", all.x = "FALSE", all.y = FALSE)
+#' return_merge_type(all = FALSE, all.x = FALSE, all.y = FALSE)
 #'
 #' @author Olivier Humblet
 
@@ -41,3 +42,9 @@ return_join_type <- function(all, all.x, all.y) {
 
 }
 
+# # Interactive testing
+# return_join_type(all = FALSE, all.x= FALSE, all.y = FALSE) # "INNER"
+# return_join_type(all = TRUE, all.x= TRUE, all.y = TRUE) # "FULL OUTER"
+# return_join_type(all = FALSE, all.x= TRUE, all.y = FALSE) # "LEFT OUTER"
+# return_join_type(all = FALSE, all.x= FALSE, all.y = TRUE) # "RIGHT OUTER"
+# return_join_type(all = FALSE, all.x= TRUE, all.y = TRUE) # "A combination of 'all' variables was specified that is unexpected for SafeMerge."

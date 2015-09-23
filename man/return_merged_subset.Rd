@@ -12,7 +12,7 @@ return_merged_subset(dIn, varname)
 \item{varname}{The name of the variable in dIn that is descibed above.}
 }
 \value{
-Returns the subset of dIn for which the value of varname is TRUE. This should indicate the rows of dIn that were merged-in the desired input data frame.
+Returns the subset of dIn for which the value of varname is TRUE. This should indicate the rows of dIn that were merged-in the desired input data frame. Also rrmoves the variable varname from the dataframe.
 }
 \description{
 Return the subset of a merged data frame from the specified input data frame, based on the presence of a boolean variable.
@@ -21,7 +21,7 @@ Return the subset of a merged data frame from the specified input data frame, ba
 None.
 }
 \examples{
-d <- data.frame(id = 1:2, from.x = c(TRUE, NA), from.y = NA)
+d <- data.frame(id = 1:2, in.x = c(TRUE, NA), in.y = NA)
 return_merged_subset(d, "from.x")
 }
 \author{

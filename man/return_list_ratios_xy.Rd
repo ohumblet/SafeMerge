@@ -11,9 +11,9 @@ return_list_ratios_xy(x, y, by.x, by.y)
 
 \item{y}{Typically the merged portion of the final merged dataset that came from y. (We only care about the merged portion.)}
 
-\item{by.x}{The 'by.x' input to the merge function.}
+\item{by.x}{by.x from base::merge.}
 
-\item{by.y}{The 'by.y' input to the merge function.}
+\item{by.y}{by.y from base::merge.}
 }
 \value{
 Returns a list whose two entries are the ratios of observations to unique by-variable combinations, for the two datasets (i.e. ratio_in_x and ratio_in_y, respectively).
@@ -22,10 +22,12 @@ Returns a list whose two entries are the ratios of observations to unique by-var
 Returns a list of the ratios of observations to rows in both x and y..
 }
 \details{
-Additional details, including preconditions and warnings (which are not supported roxygen sections).
+None.
 }
 \examples{
-Examples of using the function.
+d1 <- data.frame(id = rep(1:2, times = 2:1), v1 = 1:3)
+d2 <- data.frame(id = rep(1:2, times = 2:1), v2 = 4:6)
+return_list_ratios_xy(d1, d2, "id")
 }
 \author{
 Olivier Humblet

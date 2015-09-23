@@ -5,8 +5,8 @@
 #'
 #' @param x Typically the merged portion of the final merged dataset that came from x. (We only care about the merged portion.)
 #' @param y Typically the merged portion of the final merged dataset that came from y. (We only care about the merged portion.)
-#' @param by.x The 'by.x' input to the merge function.
-#' @param by.y The 'by.y' input to the merge function.
+#' @param by.x by.x from base::merge.
+#' @param by.y by.y from base::merge.
 #'
 #' @return Returns a list whose two entries are the ratios of observations to unique by-variable combinations, for the two datasets (i.e. ratio_in_x and ratio_in_y, respectively).
 #'
@@ -15,7 +15,7 @@
 #' @examples
 #' d1 <- data.frame(id = rep(1:2, times = 2:1), v1 = 1:3)
 #' d2 <- data.frame(id = rep(1:2, times = 2:1), v2 = 4:6)
-#' return_list_ratios_xy(d1, d2, "id", "id")
+#' return_list_ratios_xy(d1, d2, "id")
 #'
 #' @author Olivier Humblet
 
@@ -31,6 +31,17 @@ return_list_ratios_xy <- function(x, y, by.x, by.y) {
   return(list_ratios)
 
 }
+
+
+# # Interactive testing
+# (dBP <- data.frame(id = c("1abc", "2efg", "3hij"),
+#                   bp = c("hi", "lo", "hi")
+# ))
+#
+# (dStress <- data.frame(id = c("1abc", "2efg"),
+#                       stress = c("yes", "no")
+# ))
+# return_list_ratios_xy(dBP, dStress, by = "id")
 
 
 
@@ -62,7 +73,7 @@ count_unique_id_combos <- function(df, by.i = NULL) {
 
   if(is.null(by.i)) {stop("One or more by.i variables must be specified.")}
 
-  if(!all(by.i %in% names(df))) {stop("by.i must specify variable names that are all part of the input data frame.")}
+  if(!all(by.i %in% names(df))) {stop(paste(names(df), by.i, "by.i must specify variable names that are all part of the input data frame."))}
 
   # collapse each data frame into unique combinations of the by variables, then count the rows and return the number.
   unique(df[,
@@ -72,3 +83,15 @@ count_unique_id_combos <- function(df, by.i = NULL) {
     return
 
 }
+
+
+# # Interactive testing
+# (dBP <- data.frame(id = c("1abc", "2efg", "3hij"),
+#                   bp = c("hi", "lo", "hi")
+# ))
+# count_unique_id_combos(dBP, "id")
+#
+# (dStress <- data.frame(id = c("1abc", "2efg"),
+#                       stress = c("yes", "no")
+# ))
+# count_unique_id_combos(dStress, "id")

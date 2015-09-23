@@ -1,13 +1,107 @@
-print_always <- function(x, y, by, by.x, by.y) {
+#' @title Print information for every merge.
+#'
+#' @description Print information for every merge.
+#'
+#' @param all   Identical to base merge function.
+#' @param all.x Identical to base merge function.
+#' @param all.y Identical to base merge function.
+#'
+#' @param x     Identical to base merge function.
+#' @param y     Identical to base merge function.
+#' @param by    Identical to base merge function.
+#' @param by.x  Identical to base merge function.
+#' @param by.y  Identical to base merge function.
+#' @param all   Identical to base merge function.
+#' @param all.x Identical to base merge function.
+#' @param all.y Identical to base merge function.
+#'
+#'
+#' @return Print the appropriate information.
+#'
+#' @details None.
+#'
+#' @export
+#'
+#' @examples
+#' print_always(x, y, by = "id") # not functional
+#'
+#' @author Olivier Humblet
+
+print_always <- function(x, y, by, by.x = by, by.y = by, all = FALSE, all.x = all, all.y = all) {
+
+  # print the join type
+  print_join_type(all = all,
+                  all.x = all.x,
+                  all.y = all.y)
 
   # print the by variables
-  print_by_vars <- function(by, by.x, by.y)
+  print_by_vars(by = by,
+                by.x = by.x,
+                by.y = by.y)
 
   # print the merge ratio (e.g. 1:1, 1:many...)
-  print_merge_ratio(x, y, by.x, by.y)
-
+  print_merge_ratio(x = x,
+                    y = y,
+                    by.x = by.x,
+                    by.y = by.y)
 
 }
+
+# # Interactive testing
+# d_x <- data.frame(id = 1, v1 = 1)
+# d_y <- data.frame(id = 1, v2 = 2)
+# print_always(d_x, d_y, by = "id")
+
+
+#' @title Print join type.
+#'
+#' @description Print join type.
+#'
+#' @param all   Identical to base merge function.
+#' @param all.x Identical to base merge function.
+#' @param all.y Identical to base merge function.
+#'
+#' @return Print the appropriate join type, along with associated information.
+#'
+#' @details Introduces a behavior that differs from that of base merge, i.e. that ir returns an error for combinations of 'all' values that are odd but legal. For example return_merge_type(all = "FALSE", all.x = "TRUE", all.y = TRUE) returns an error because it was probably unintentional, even though this seems to produce a functional merge (presumably a FULL OUTER merge)
+#'
+#' @export
+#'
+#' @examples
+#' print_join_type(all = FALSE, all.x = FALSE, all.y = FALSE)
+#'
+#' @author Olivier Humblet
+
+print_join_type <- function(all = NULL, all.x = NULL, all.y = NULL) {
+
+  join_type <- return_join_type(all = all,
+                                all.x = all.x,
+                                all.y = all.y)
+
+  if( join_type == "INNER" ) {
+    cat(paste(join_type,
+                "merge. All unmatched observations will be lost.\n"))
+  } else if( join_type == "FULL OUTER") {
+    cat(paste(join_type,
+                "merge. All observations will be kept.\n"))
+  } else if( join_type == "LEFT OUTER") {
+    cat(paste(join_type,
+                "merge. Observations not in x will be lost.\n"))
+  } else if( join_type == "RIGHT OUTER") {
+    cat(paste(join_type,
+                "merge. Observations not in y will be lost.\n"))
+  } else {stop("Unexpected join type returned.")}
+
+}
+
+# Interactive testing
+
+# print_join_type(all = FALSE, all.x= FALSE, all.y = FALSE) # "INNER"
+# print_join_type(all = TRUE, all.x= TRUE, all.y = TRUE) # "FULL OUTER"
+# print_join_type(all = FALSE, all.x= TRUE, all.y = FALSE) # "LEFT OUTER"
+# print_join_type(all = FALSE, all.x= FALSE, all.y = TRUE) # "RIGHT OUTER"
+# print_join_type(all = FALSE, all.x= TRUE, all.y = TRUE) # Error "A combination of 'all' variables was specified that is unexpected for SafeMerge."
+
 
 
 
@@ -45,11 +139,11 @@ print_merge_ratio <- function(x, y, by.x, by.y) {
                                        by.y = by.y)
 
   if(list_ratios[["ratio_in_x"]] == 1 && list_ratios[["ratio_in_y"]] == 1) {
-    print("1:1 merge.")
+    cat("1:1 merge.\n")
   } else if(list_ratios[["ratio_in_x"]] == 1 && list_ratios[["ratio_in_y"]] > 1) {
-    print("1:many merge.")
+    cat("1:many merge.\n")
   } else if(list_ratios[["ratio_in_x"]] > 1 && list_ratios[["ratio_in_y"]] == 1) {
-    print("many:1 merge.")
+    cat("many:1 merge.\n")
   } else if(list_ratios[["ratio_in_x"]] > 1 && list_ratios[["ratio_in_y"]] > 1) {
     stop("many:many merge.")
   } else stop("Unexpected merge type.")

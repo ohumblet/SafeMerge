@@ -11,9 +11,9 @@ stop_if_many_to_many(x, y, by.x, by.y)
 
 \item{y}{Typically the merged portion of the final merged dataset that came from y. (We only care about the merged portion.)}
 
-\item{by.x}{The 'by.x' input to the merge function.}
+\item{by.x}{From base::merge.}
 
-\item{by.y}{The 'by.y' input to the merge function.}
+\item{by.y}{From base::merge.}
 }
 \value{
 None, throws error.
@@ -22,10 +22,12 @@ None, throws error.
 Generates error if both input data frames have >1 observation for any unique combination of by variable(s).
 }
 \details{
-A many-to-many merge will cause R to generated all combinations of the non-uniquely-matched rows. This is almost never the ntended behavior, so it is not allowed by SafeMerge.
+A many-to-many merge will cause R to generated all combinations of the non-uniquely-matched rows. This is almost never the intended behavior, so it is not allowed by SafeMerge.
 }
 \examples{
-stop_if_no_by_vars(NULL, NULL, NULL)
+d1 <- data.frame(id = rep(1:2, times = 2:1), v1 = 1:3)
+d2 <- data.frame(id = rep(1:2, times = 2:1), v2 = 4:6)
+stop_if_many_to_many(d1, d2, "id", "id")
 }
 \author{
 Olivier Humblet

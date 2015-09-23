@@ -32,7 +32,7 @@ generate_errors <- function(by,
   stop_if_many_to_many(x = list_in[["merged_from_x"]],
                        y = list_in[["merged_from_y"]],
                        by.x = by.x,
-                       by.y = by.y)
+                       by.y = by.x)
 
 }
 
@@ -73,8 +73,8 @@ stop_if_no_by_vars <- function(by, by.x, by.y) {
 #'
 #' @param x Typically the merged portion of the final merged dataset that came from x. (We only care about the merged portion.)
 #' @param y Typically the merged portion of the final merged dataset that came from y. (We only care about the merged portion.)
-#' @param by.x The 'by.x' input to the merge function.
-#' @param by.y The 'by.y' input to the merge function.
+#' @param by.x From base::merge.
+#' @param by.y From base::merge.
 #'
 #' @return None, throws error.
 #'
