@@ -46,6 +46,7 @@ This vignette will be divided into three sections according to these three parts
 3. in the merged portion did both have multiple obs/id var?
 4. merge ratio (1:1, etc)
 5. if by.x and by.y are used, print a warning that the by.y varname has been replaced
+6. detecting other unexpected merge failures
 
 #### II. Issues with the join type
 1. printing of join type
@@ -70,15 +71,15 @@ We create the two datasets as follows. Blood pressure data has been collected fr
 
 ```{r define-data-1}
 
-dBP <- data.frame(id = c("1abc", "2efg", "3hij"),
-                  bp = c("hi", "lo", "hi")
-)
-dBP
+(dBP <- data.frame(id = c("1abc", "2efg", "3hij"),
+                  bp = c("hi", "lo", "hi"),
+                  stringsAsFactors = FALSE
+))
 
-dStress <- data.frame(uid = c("1abc", "2efg"),
-                      stress = c("yes", "no")
-)
-dStress
+(dStress <- data.frame(uid = c("1abc", "2efg"),
+                      stress = c("yes", "no"),
+                      stringsAsFactors = FALSE
+))
 
 ```
 
@@ -116,7 +117,7 @@ Because it's nearly inconceivable that the above behavior would ever be intended
 
 ```{r cs2-safemerge, error=TRUE, purl=FALSE}
 
-SafeMerge(df.bp, df.stress)
+SafeMerge(dBP, dStress)
 
 ```
 
@@ -141,7 +142,7 @@ merge(dBP_m2m, dStress_m2m, by.x = "id", by.y = "uid")
 
 ```
 
-Would we notice this in our data? Perhaps. But what if we have complex data with may records? Applying the maxim 'fail early', SafeMerge will throw the following error in this situation, as shown below:
+Would we notice this in our data and correct the error? Perhaps. But what if we have complex data with many records? Applying the maxim 'fail early', SafeMerge will throw the following error in this situation, as shown below:
 "This is a many-to-many-merge. By variables with more levels must be specified, so as to uniquely identify all observations in at least one of the data frames."
 
 ```{r error-many-to-many, error=TRUE, purl=FALSE}
@@ -173,6 +174,42 @@ SafeMerge(dBP, dStress, by.x = "id", by.y = "uid")
 
 ```
 
+
+#### 6. Detecting other unexpected merge failures
+
+Another piece of useful information printed by SafeMerge is the % of unique IDs that were mergd into the final data frame from each of the input data frames.
+(By 'ID' we refer here to a unique combination of the 'by' variable(s).)
+
+In what scenario is this useful? 
+Oftentimes the analyst knows roughly what fraction of the IDs in each input data frames should be successfully merged into the final data frame. 
+Taking the scenario defined earlier, the analyst may know that most (but not all) of the blood pressure observations should match observations in the stress data frame, and all of the Stress observations should match BP observations.
+
+Yet suppose that for some reason some of the UIDs in the stress data frame were not made lowercase, and therefore will not match the lowercase values in dBP, as shown below. 
+
+```{r other-merge-errors-df}
+
+dStress_upper <- dStress
+dStress_upper[2, "uid"] <- toupper(dStress[2, "uid"])
+dStress_upper
+
+```
+
+In that case the use of SafeMerge will yield the following output:
+
+```{r other-merge-errors}
+
+SafeMerge(dBP,
+          dStress_upper,
+          by.x = "id",
+          by.y = "uid")
+
+```
+
+The printed output from lines 5-6, will alert the analyst that only 33% of the unique 'by' variable combinations from X were successfully merged, and likewise with 50% of the 'by' variable combinations from Y.
+
+Note: Why does this count unique combinations of the 'by'variables, and not just the rows?
+I believe the former is more informative than the latter, notably in the case of a 1:many (or many:1 merge). Taking a 1:many merge as an example, the duplication of observations from X due to the multiple matches in Y could mask a failure of matching. For that reason it's more useful to focus on the unique number of vy variable combinatios instead of the number of rows. 
+
 ------------------
 
 ### Issues with the join type
@@ -203,7 +240,9 @@ SafeMerge(dBP, dStress, by.x = "id", by.y = "uid")
 
 ```
 
-The first line of printed output is "INNER merge. All unmatched observations will be lost." The analyst could then note whether this matches their intention.
+The 1st line of printed output is "INNER merge. All unmatched observations will be lost." 
+In addition, the 5th line of output is "X: 2 of 3 (67%) individual ids were merged."
+The analyst could then note whether this matches their intention.
 
 
 ------------------
@@ -226,7 +265,6 @@ dOverlap <- merge(dBP_overlap, dStress_overlap, by.x = "id", by.y = "uid")
 names(dOverlap)
 
 # Using SafeMerge
-debugonce(SafeMerge)
 names(SafeMerge(dBP_overlap, dStress_overlap, by = "id", by.y = "uid"))
 
 

@@ -27,7 +27,7 @@
 #'
 #' @author Olivier Humblet
 
-print_always <- function(x, y, by, by.x = by, by.y = by, all = FALSE, all.x = all, all.y = all) {
+print_always <- function(x, y, by, by.x = by, by.y = by, all = FALSE, all.x = all, all.y = all, list_in = NULL) {
 
   # print the join type
   print_join_type(all = all,
@@ -44,6 +44,9 @@ print_always <- function(x, y, by, by.x = by, by.y = by, all = FALSE, all.x = al
                     y = y,
                     by.x = by.x,
                     by.y = by.y)
+
+  # print fraction of the IDs merged from each input data frame
+  print_fraction_merged(x = x, y = y, by.x = by.x, by.y = by.y, list_in = list_in)
 
 }
 
@@ -151,35 +154,104 @@ print_merge_ratio <- function(x, y, by.x, by.y) {
 }
 
 
-print_fraction_merged <- function() {
-  # FRAGMENT
 
-        # Print fraction merged (make into separate function?)
+#' @title Print fraction merged.
+#'
+#' @description Prints the fraction of ids that are merged into the final data frame from each of the nput data frames.
+#'
+#' @param x Typically the merged portion of the final merged dataset that came from x. (We only care about the merged portion.)
+#' @param y Typically the merged portion of the final merged dataset that came from y. (We only care about the merged portion.)
+#' @param by.x From base::merge.
+#' @param by.y From base::merge.
+#' @param list_in A list containing 3 named data frames:  merged is the data frame that resulted from merging x and y, merged_from_x is the rows of merged that came from x, and merged_from_y is the rows of merged that came from y.
+#'
+#' @return Prints information on the number and percent of IDs that are merged from each input data frame.
+#'
+#' @details None.
+#'
+#' @examples
+#' print_fraction_merged <- function(x=x, y=y, by.x=by.x, by.y=by.y, list_in = list_in) # not functional
+#'
+#' @author Olivier Humblet
 
-unique_by_merge_from_x <- count_unique_id_combos(subset(df.merge,
-                                                        in.x == TRUE),
-                                                 by.vars.in.merge)
-unique_by_merge_from_y <- count_unique_id_combos(subset(df.merge,
-                                                        in.y == TRUE),
-                                                 by.vars.in.merge)
+print_fraction_merged <- function(x,
+                                  y,
+                                  by.x,
+                                  by.y,
+                                  list_in = NULL) {
 
-        paste("The percent of unique ID combos in the final merged data frame from x = ",
-              round(100*unique_by_merge_from_x / unique_by_x),
-              "%",
-              ", and from y = ",
-              round(100*unique_by_merge_from_x / unique_by_y),
-              "%.",
-              "\n", sep = "") %>% cat
-        paste("Observations in x matching observations in y: ",
-              round(100*proportion_of_df1_in_df2(x, y, by.vars.in.x, by.vars.in.y)),
-              "%.",
-              "\n", sep = "") %>% cat
-        paste("Observations in y matching observations in x: ",
-              round(100*proportion_of_df1_in_df2(y, x, by.vars.in.y, by.vars.in.x)),
-              "%.",
-              "\n", sep = "") %>% cat
+  if( !(all(by.x %in% names(x))) | !(all(by.y %in% names(y))) ) {
+    stop("by.x and by.y must be variables in x and y, respectively.")
+  }
+
+  if( !(all(by.x %in% names(list_in[["merged_from_x"]]))) | !(all(by.x %in% names(list_in[["merged_from_y"]]))) ) {
+    stop("by.x must be named a variable(s) in the merged subsets of x and y, respectively.")
+  }
+
+  # Count the unique ids merged from each input data frame
+  n_merged_ids_from_x <- count_unique_id_combos(list_in[["merged_from_x"]],
+                                                by.x)
+  n_total_ids_from_x <- count_unique_id_combos(x,
+                                               by.x)
+  pct_merged_ids_from_x <- 100*round(n_merged_ids_from_x / n_total_ids_from_x,
+                                     digits = 2)
+
+  n_merged_ids_from_y <- count_unique_id_combos(list_in[["merged_from_y"]],
+                                                by.x) # by.x is used because this is a subset of the merged data frame, where by.y has been renamed.
+  n_total_ids_from_y <- count_unique_id_combos(y,
+                                               by.y)
+  pct_merged_ids_from_y <- 100*round(n_merged_ids_from_y / n_total_ids_from_y,
+                                     digits = 2)
+
+  # Print the text:
+  # Example: "X: 34 of 37 (92%) individual ids were merged."
+
+  cat(paste0("X: ",
+             n_merged_ids_from_x,
+             " of ",
+             n_total_ids_from_x,
+             " (",
+             pct_merged_ids_from_x,
+             "%) individual ids were merged.\n"))
+
+  cat(paste0("Y: ",
+             n_merged_ids_from_y,
+             " of ",
+             n_total_ids_from_y,
+             " (",
+             pct_merged_ids_from_y,
+             "%) individual ids were merged.\n"))
 
 }
+
+# # Interactive testing
+# (dBP <- data.frame(id = c("1abc", "2efg", "3hij"),
+#                   bp = c("hi", "lo", "hi")))
+# (dStress <- data.frame(uid = c("1abc", "2efg"),
+#                       stress = c("yes", "no")))
+# (df_list <- return_list_merged_dataframes(dBP,
+#                                         dStress,
+#                                         by.x = "id",
+#                                         by.y = "uid"))
+# print_fraction_merged(x = dBP,
+#                       y = dStress,
+#                       by.x = "id",
+#                       by.y = "uid",
+#                       list_in = df_list)
+# (df_list <- return_list_merged_dataframes(dBP,
+#                                         dStress,
+#                                         all.x = TRUE,
+#                                         by.x = "id",
+#                                         by.y = "uid"))
+# print_fraction_merged(x = dBP,
+#                       y = dStress,
+#                       by.x = "id",
+#                       by.y = "uid",
+#                       list_in = df_list)
+
+
+
+
 
 #' @title Print the by variables.
 #'
@@ -215,3 +287,6 @@ print_by_vars <- function(by, by.x, by.y) {
 # debugonce(print_by_vars)
 # print_by_vars(c("v1", "v2"), NULL, NULL)
 # print_by_vars(NULL, c("v1.x", "v2.x"), c("v1.y", "v2.y"))
+
+
+

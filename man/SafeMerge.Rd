@@ -31,7 +31,7 @@ SafeMerge(x, y, by = NULL, by.x = by, by.y = by, all = FALSE,
 
 \item{incomparables}{Identical to base merge function.}
 
-\item{verbose}{Logical; default = FALSE; if TRUE then more diagnostic information is printed.}
+\item{verbose}{Logical; default = FALSE; if TRUE then more diagnostic information is printed (under development).}
 }
 \value{
 Returns the data frame resulting from the merge of the two input data frames.  The functionality is mostly identical to 'merge', except as described in 'Details'.

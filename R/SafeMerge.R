@@ -13,7 +13,7 @@
 #' @param sort Identical to base merge function.
 #' @param suffixes Identical to base merge function.
 #' @param incomparables Identical to base merge function.
-#' @param verbose Logical; default = FALSE; if TRUE then more diagnostic information is printed.
+#' @param verbose Logical; default = FALSE; if TRUE then more diagnostic information is printed (under development).
 #'
 #' @return Returns the data frame resulting from the merge of the two input data frames.  The functionality is mostly identical to 'merge', except as described in 'Details'.
 #'
@@ -60,7 +60,8 @@ SafeMerge <- function(x, y, by = NULL,
                y = y,
                by = by,
                by.x = by.x,
-               by.y = by.y)
+               by.y = by.y,
+               list_in = df_list)
 
   # Print additional output only if verbose = TRUE
   if(verbose == TRUE) {

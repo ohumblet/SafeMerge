@@ -32,7 +32,7 @@ generate_errors <- function(by,
   stop_if_many_to_many(x = list_in[["merged_from_x"]],
                        y = list_in[["merged_from_y"]],
                        by.x = by.x,
-                       by.y = by.x)
+                       by.y = by.x) # by.x is used because by.y has been overwritten in the merged data frames.
 
 }
 
