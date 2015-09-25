@@ -14,5 +14,5 @@ Get the development version from github:
 # install.packages("devtools")
 devtools::install_github("ohumblet/SafeMerge", build_vignettes = TRUE)
 library("SafeMerge")
-vignette("SafeMerge")
+vignette("SafeMerge_vignette", package = "SafeMerge")
 ```
